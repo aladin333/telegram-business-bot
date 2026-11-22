@@ -194,6 +194,12 @@ async function readAssignments(filePath: string): Promise<unknown[]> {
   return parsed;
 }
 
+export async function loadAssignments(
+  filePath: string = assignmentsPath,
+): Promise<unknown[]> {
+  return withFileLock(filePath, () => readAssignments(filePath));
+}
+
 async function withFileLock<T>(filePath: string, fn: () => Promise<T>): Promise<T> {
   const previous = writeTails.get(filePath) ?? Promise.resolve();
   let release: () => void = () => {};
