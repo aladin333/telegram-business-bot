@@ -1,4 +1,5 @@
 import { Telegraf } from "telegraf";
+import { saveAssignmentFromMessage } from "./assignments.js";
 import { config } from "./config.js";
 import { appendTurn, clearHistory, getHistory } from "./memory.js";
 import { chatCompletion } from "./openai.js";
@@ -49,6 +50,16 @@ export function createBot(): Telegraf {
     const text = ctx.message.text.trim();
     if (!text || text.startsWith("/")) {
       return;
+    }
+
+    try {
+      const saved = await saveAssignmentFromMessage(text);
+      if (saved) console.log("Zuweisung gespeichert.");
+    } catch (err) {
+      console.error(
+        "Zuweisung speichern fehlgeschlagen:",
+        err instanceof Error ? err.message : "unbekannt",
+      );
     }
 
     await ctx.sendChatAction("typing");
